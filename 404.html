@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>404 - ReelBox+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #000;
+            color: white;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .logo {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #e50914;
+            letter-spacing: 2px;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 20px;
+        }
+
+            .logo.glitch::before,
+            .logo.glitch::after {
+                content: attr(data-text);
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0.7;
+            }
+
+            .logo.glitch::before {
+                color: red;
+                transform: translate(2px, 0);
+                animation: glitch 2s infinite;
+            }
+
+            .logo.glitch::after {
+                color: blue;
+                transform: translate(-2px, 0);
+                animation: glitch 1.5s infinite;
+            }
+
+        .error-code {
+            font-size: 8rem;
+            font-weight: bold;
+            color: #e50914;
+            margin-bottom: 20px;
+        }
+
+        .message {
+            font-size: 1.5rem;
+            opacity: 0.8;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        .home-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            background: #e50914;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+            .home-btn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px rgba(229, 9, 20, 0.6);
+            }
+
+        /* ANIMATIONS */
+        @keyframes glitch {
+            0% {
+                clip-path: inset(0 0 90% 0);
+            }
+
+            50% {
+                clip-path: inset(40% 0 40% 0);
+            }
+
+            100% {
+                clip-path: inset(90% 0 0 0);
+            }
+        }
+
+        /* FLOATING SHAPES */
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.05;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .shape1 {
+            width: 120px;
+            height: 120px;
+            background: red;
+            top: 10%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .shape2 {
+            width: 80px;
+            height: 80px;
+            background: blue;
+            top: 60%;
+            left: 70%;
+            animation-delay: 2s;
+        }
+
+        .shape3 {
+            width: 100px;
+            height: 100px;
+            background: #e50914;
+            top: 30%;
+            left: 50%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+
+            50% {
+                transform: translateY(-20px) translateX(15px);
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="logo glitch" data-text="ReelBox+">ReelBox+</div>
+    <div class="error-code">404</div>
+    <div class="message">
+        Oops! The page you are looking for does not exist.<br>
+        It might have been removed or the URL is incorrect.
+    </div>
+    <a href="index.html" class="home-btn">Go Back Home</a>
+
+    <!-- Floating shapes -->
+    <div class="shape shape1"></div>
+    <div class="shape shape2"></div>
+    <div class="shape shape3"></div>
+
+</body>
+</html>
