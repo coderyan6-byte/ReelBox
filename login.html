@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ReelBox+ Login</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: #111;
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: white;
+        }
+
+        .login-container {
+            background-color: #222;
+            padding: 40px;
+            border-radius: 10px;
+            text-align: center;
+            width: 350px;
+        }
+
+        h1 {
+            color: #e50914;
+            margin-bottom: 20px;
+            user-select: none;
+        }
+
+        input {
+            display: block;
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: none;
+            font-size: 1rem;
+            background: #333;
+            color: white;
+        }
+
+        button {
+            background: #e50914;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            font-weight: 700;
+            margin-top: 10px;
+            width: 100%;
+        }
+
+            button:hover {
+                background: #b00612;
+            }
+
+        #toggle-mode {
+            margin-top: 15px;
+            cursor: pointer;
+            color: #aaa;
+            font-size: 0.9rem;
+        }
+
+        #error-msg {
+            color: #ff5555;
+            margin: 10px 0;
+            font-size: 0.9rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>ReelBox+</h1>
+        <div id="error-msg"></div>
+        <input type="email" id="email" placeholder="Email" required />
+        <input type="password" id="password" placeholder="Password" required />
+        <button id="action-btn">Login</button>
+        <div id="toggle-mode">Don't have an account? Sign up</div>
+    </div>
+
+    <!-- Supabase client declared once -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const supabaseUrl = "https://vjeqaxbcrhodysiiqxey.supabase.co";
+        const supabaseKey = "sb_publishable_tE3uzAT6BwaEBfQRFfQ2hg_I9KEG8js";
+        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const actionBtn = document.getElementById('action-btn');
+        const toggleMode = document.getElementById('toggle-mode');
+        const errorMsg = document.getElementById('error-msg');
+
+        let isLogin = true;
+
+        toggleMode.onclick = () => {
+            isLogin = !isLogin;
+            actionBtn.textContent = isLogin ? 'Login' : 'Sign Up';
+            toggleMode.textContent = isLogin ? "Don't have an account? Sign up" : "Already have an account? Login";
+            errorMsg.textContent = '';
+        };
+
+        actionBtn.onclick = async () => {
+            const email = emailInput.value.trim();
+            const password = passwordInput.value.trim();
+
+            if (!email || !password) {
+                errorMsg.textContent = 'Email and password are required';
+                return;
+            }
+
+            if (isLogin) {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
+                if (error) errorMsg.textContent = error.message;
+                else window.location.href = 'hub.html';
+            } else {
+                const { data, error } = await supabaseClient.auth.signUp({ email, password });
+                if (error) errorMsg.textContent = error.message;
+                else {
+                    // Insert default role into profiles table
+                    await supabaseClient.from('profiles').insert({
+                        id: data.user.id,
+                        role: 'user',
+                        user_email: email
+                    });
+                    //alert('Sign up successful! You can now login.');
+                    isLogin = true;
+                    actionBtn.textContent = 'Login';
+                    toggleMode.textContent = "Don't have an account? Sign up";
+                    emailInput.value = '';
+                    passwordInput.value = '';
+                }
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,542 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>ReelBox+</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #0b0b0b;
+            color: white;
+            display: flex;
+            height: 100vh;
+        }
+
+        .nav {
+            position: sticky;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10,10,10,0.95);
+            padding: 16px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.5);
+        }
+
+            .nav h1 {
+                color: #e50914;
+                font-size: 28px;
+                font-weight: 700;
+            }
+
+        .sidebar {
+            width: 220px;
+            background: #111;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+            .sidebar input {
+                width: 100%;
+                padding: 10px;
+                border-radius: 6px;
+                border: none;
+                background: #222;
+                color: white;
+            }
+
+            .sidebar button {
+                background: none;
+                border: none;
+                color: white;
+                text-align: left;
+                padding: 10px;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 600;
+            }
+
+                .sidebar button:hover {
+                    background: rgba(255,255,255,0.1);
+                }
+
+        .main {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        #banner {
+            position: relative;
+            width: 100%;
+            height: 300px;
+            background: #111;
+            margin-bottom: 40px;
+            border-radius: 12px;
+            overflow: hidden;
+            display: flex;
+            align-items: flex-end;
+            padding: 20px;
+        }
+
+            #banner img {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+                inset: 0;
+                z-index: 1;
+            }
+
+        #bannerContent {
+            position: relative;
+            z-index: 2;
+        }
+
+            #bannerContent h2 {
+                font-size: 36px;
+                font-weight: 700;
+            }
+
+            #bannerContent p {
+                font-size: 18px;
+                opacity: .85;
+                cursor: pointer;
+            }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill,minmax(160px,1fr));
+            gap: 18px;
+        }
+
+        .card {
+            position: relative;
+            cursor: pointer;
+            transition: transform .25s, box-shadow .25s;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #111;
+            display: flex;
+            flex-direction: column;
+        }
+
+            .card img {
+                width: 100%;
+                height: 240px;
+                object-fit: cover;
+                border-radius: 10px;
+            }
+
+            .card span {
+                display: block;
+                padding: 8px;
+                text-align: center;
+                font-weight: 600;
+                font-size: 14px;
+            }
+
+            .card:hover {
+                transform: scale(1.05);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.7);
+            }
+
+        /* Upload Panel */
+        #producer {
+            margin-top: 20px;
+            padding: 20px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            backdrop-filter: blur(8px);
+            display: none;
+        }
+
+            #producer h2 {
+                margin-bottom: 10px;
+                font-weight: 700;
+            }
+
+            #producer input, #producer select {
+                width: 100%;
+                margin-top: 10px;
+                padding: 12px;
+                border-radius: 6px;
+                border: none;
+                background: #222;
+                color: white;
+                font-size: 14px;
+            }
+
+            #producer select {
+                height: 100px;
+            }
+
+            #producer label {
+                color: #fff;
+                cursor: pointer;
+                display: inline-block;
+                margin-top: 10px;
+            }
+
+            #producer button {
+                background: none;
+                border: none;
+                color: #e50914;
+                cursor: pointer;
+                padding: 8px 0;
+                text-align: left;
+                font-weight: 600;
+            }
+
+                #producer button:hover {
+                    text-decoration: underline;
+                }
+
+        #videoFile {
+            display: none;
+        }
+
+        /* Admin Panel */
+        #adminPanel {
+            position: fixed;
+            top: 50px;
+            left: 50px;
+            width: 300px;
+            background: #eee;
+            color: black;
+            border: 2px solid #888;
+            z-index: 1500;
+            font-family: 'Inter', sans-serif;
+            user-select: none;
+            display: none;
+        }
+
+        #adminHeader {
+            background: red;
+            color: white;
+            padding: 5px 10px;
+            cursor: move;
+            font-weight: bold;
+        }
+
+        #adminBody {
+            padding: 10px;
+            background: #f0f0f0;
+        }
+
+            #adminBody h3 {
+                margin-bottom: 5px;
+            }
+
+            #adminBody button, #adminBody select, #adminBody input {
+                margin-top: 5px;
+                margin-right: 5px;
+                padding: 5px;
+            }
+
+        #deleteBtn {
+            font-weight: bold;
+            background: red;
+            color: white;
+        }
+
+        /* Global Announcement */
+        #announcementBar {
+            display: none;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: red;
+            color: white;
+            text-align: center;
+            padding: 5px;
+            z-index: 2000;
+        }
+    </style>
+</head>
+<body>
+
+    <div style="flex-shrink:0; display:flex; flex-direction:column; width:100%;">
+        <div class="nav">
+            <h1>ReelBox+</h1>
+            <div class="user" id="auth"></div>
+        </div>
+        <div style="display:flex; flex:1;">
+            <div class="sidebar">
+                <input type="text" id="searchBar" placeholder="Search...">
+                <button onclick="location.href='recentlyWatched.html'">Recently Watched</button>
+                <button id="toggleProducer">Open Upload Panel</button>
+                <button onclick="logout()">Logout</button>
+            </div>
+            <div class="main">
+                <div id="banner">
+                    <img id="bannerImg" src="Placeholder.png">
+                    <div id="bannerContent">
+                        <h2 id="bannerTitle">Latest Movie</h2>
+                        <p id="bannerDesc">Description of the latest movie</p>
+                    </div>
+                </div>
+
+                <div id="producer">
+                    <h2>Upload Movie</h2>
+                    <input id="title" placeholder="Title">
+                    <input id="desc" placeholder="Description">
+                    <input id="poster" placeholder="Poster URL (optional)">
+                    <input id="category" placeholder="Category">
+                    <input type="file" id="videoFile" accept="video/mp4">
+                    <label for="videoFile">Choose Video File</label>
+                    <button onclick="uploadMovie()">Upload Movie</button>
+
+                    <h2>Create Playlist</h2>
+                    <input id="playlistName" placeholder="Playlist Name">
+                    <select id="playlistMovies" multiple></select>
+                    <button onclick="createPlaylist()">Create Playlist</button>
+                </div>
+
+                <div class="grid" id="movies"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Panel -->
+    <div id="adminPanel">
+        <div id="adminHeader">Admin Panel</div>
+        <div id="adminBody">
+            <div>
+                <h3>Global Announcement</h3>
+                <input type="text" id="announcementInput" placeholder="Type announcement">
+                <button id="setAnnouncementBtn">Set Announcement</button>
+                <button id="removeAnnouncementBtn">Remove Announcement</button>
+            </div>
+            <div style="margin-top:20px;">
+                <h3>Manage Users</h3>
+                <select id="userSelect"></select>
+                <div style="margin-top:10px;">
+                    <!-- Ban and Delete buttons hidden per user request -->
+                    <button id="banBtn" style="display:none;">Ban User</button>
+                    <input type="datetime-local" id="banUntilInput" style="margin-left:5px; display:none;">
+                    <select id="roleSelect">
+                        <option value="user">User</option>
+                        <option value="film_producer">Film Producer</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                    <button id="setRoleBtn">Set Role</button>
+                </div>
+            </div>
+            <div style="margin-top:20px;">
+                <h3 style="color:red;">Danger Zone</h3>
+                <button id="deleteBtn" style="display:none;">Delete User</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Announcement Bar -->
+    <div id="announcementBar"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        const sb = supabase.createClient(
+            "https://vjeqaxbcrhodysiiqxey.supabase.co",
+            "sb_publishable_tE3uzAT6BwaEBfQRFfQ2hg_I9KEG8js"
+        );
+
+        let user, role, allMovies = [], allPlaylists = [];
+
+        (async () => {
+            const res = await sb.auth.getUser();
+            if (!res.data.user) location.href = "login.html";
+            user = res.data.user;
+
+            const { data: profile } = await sb.from("profiles").select("*").eq("id", user.id).single();
+            role = profile.role;
+            document.getElementById("auth").textContent = `${user.email} (${role})`;
+
+            if (role === "film_producer") document.getElementById("toggleProducer").style.display = "block";
+            else document.getElementById("toggleProducer").style.display = "none";
+
+            await loadMovies();
+            await initAdminPanel(profile);
+        })();
+
+        async function loadMovies() {
+            const { data: moviesData } = await sb.from("movies").select("*");
+            const { data: playlistsData } = await sb.from("playlists").select("*");
+            allMovies = moviesData || [];
+            allPlaylists = playlistsData || [];
+
+            if (allMovies.length) {
+                const latest = allMovies[allMovies.length - 1];
+                document.getElementById("bannerImg").src = latest.poster_url || 'Placeholder.png';
+                document.getElementById("bannerTitle").textContent = latest.title;
+                document.getElementById("bannerDesc").textContent = latest.description || '';
+                document.getElementById("bannerDesc").onclick = () => openVideoPage(latest);
+            }
+
+            renderGrid();
+        }
+
+        function renderGrid(filter = "") {
+            const container = document.getElementById("movies");
+            container.innerHTML = "";
+            const playlistMovieIds = allPlaylists.flatMap(p => p.movie_ids || []);
+            const filteredMovies = allMovies.filter(m => !playlistMovieIds.includes(m.id) && m.title.toLowerCase().includes(filter.toLowerCase()));
+
+            filteredMovies.forEach(m => {
+                const card = document.createElement("div");
+                card.className = "card";
+                card.innerHTML = `<img src="${m.poster_url || 'Placeholder.png'}"><span>${m.title}</span>`;
+                card.onclick = () => openVideoPage(m);
+                container.appendChild(card);
+            });
+
+            const sel = document.getElementById("playlistMovies");
+            sel.innerHTML = "";
+            allMovies.forEach(m => {
+                const opt = document.createElement("option");
+                opt.value = m.id;
+                opt.textContent = m.title;
+                sel.appendChild(opt);
+            });
+        }
+
+        function openVideoPage(video) {
+            const params = new URLSearchParams();
+            params.set('title', video.title);
+            params.set('url', video.video_url);
+            params.set('desc', video.description || '');
+            params.set('category', video.category || 'Unknown');
+            window.location.href = "video.html?" + params.toString();
+        }
+
+        async function uploadMovie() {
+            if (role !== "film_producer") return alert("Only film producers can upload!");
+            const file = videoFile.files[0];
+            if (!file) return alert("Select a video first!");
+            const path = `${Date.now()}_${file.name}`;
+            const { error: uploadErr } = await sb.storage.from("videos").upload(path, file);
+            if (uploadErr) return alert(uploadErr.message);
+            const { data: urlData } = sb.storage.from("videos").getPublicUrl(path);
+
+            await sb.from("movies").insert({
+                title: title.value,
+                description: desc.value,
+                poster_url: poster.value || 'Placeholder.png',
+                category: category.value,
+                video_url: urlData.publicUrl,
+                owner_id: user.id
+            });
+            alert("Movie uploaded!");
+            loadMovies();
+        }
+
+        async function createPlaylist() {
+            const name = playlistName.value;
+            const selected = Array.from(playlistMovies.selectedOptions).map(o => parseInt(o.value));
+            if (!name || selected.length === 0) return alert("Enter a name and select movies!");
+            await sb.from("playlists").insert({ name, movie_ids: selected, poster_url: 'Placeholder.png', owner_id: user.id });
+            alert("Playlist created!");
+            loadMovies();
+        }
+
+        function logout() { sb.auth.signOut().then(() => location.href = "login.html"); }
+        document.getElementById('toggleProducer').onclick = () => {
+            const panel = document.getElementById('producer');
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
+        }
+        document.getElementById('searchBar').oninput = (e) => renderGrid(e.target.value);
+
+        // ===== ADMIN PANEL =====
+        async function initAdminPanel(profile) {
+            if (profile.role !== "admin") { document.getElementById("adminPanel").style.display = "none"; return; }
+
+            const userSelect = document.getElementById("userSelect");
+            const roleSelect = document.getElementById("roleSelect");
+            const banBtn = document.getElementById("banBtn");
+            const deleteBtn = document.getElementById("deleteBtn");
+            const setRoleBtn = document.getElementById("setRoleBtn");
+            const announcementInput = document.getElementById("announcementInput");
+            const setAnnouncementBtn = document.getElementById("setAnnouncementBtn");
+            const removeAnnouncementBtn = document.getElementById("removeAnnouncementBtn");
+            const announcementBar = document.getElementById("announcementBar");
+            const banUntilInput = document.getElementById("banUntilInput");
+
+            // Hide ban and delete buttons to disable those actions
+            banBtn.style.display = "none";
+            banUntilInput.style.display = "none";
+            deleteBtn.style.display = "none";
+
+            let allUsers = [];
+
+            async function loadUsers() {
+                const { data: profiles } = await sb.from("profiles").select("*");
+                allUsers = profiles.map(p => ({
+                    id: p.id,
+                    email: p.user_email || "Unknown",
+                    role: p.role || "user",
+                    banned_until: p.banned_until || null
+                }));
+
+                userSelect.innerHTML = "";
+                allUsers.forEach(u => {
+                    const opt = document.createElement("option");
+                    opt.value = u.id;
+                    opt.textContent = `${u.email} (${u.role})`;
+                    userSelect.appendChild(opt);
+                });
+            }
+
+            await loadUsers();
+
+            // Ban button disabled (no action)
+            banBtn.onclick = async () => {
+                alert("Ban feature disabled.");
+            };
+
+            // Delete button disabled (no action)
+            deleteBtn.onclick = async () => {
+                alert("Delete feature disabled.");
+            };
+
+            setRoleBtn.onclick = async () => {
+                const userId = userSelect.value;
+                const newRole = roleSelect.value;
+                if (!userId) return alert("Select a user!");
+                await sb.from("profiles").update({ role: newRole }).eq("id", userId);
+                alert("Role updated!");
+                await loadUsers();
+            };
+
+            setAnnouncementBtn.onclick = () => {
+                const msg = announcementInput.value.trim();
+                if (!msg) return alert("Enter a message!");
+                announcementBar.textContent = msg;
+                announcementBar.style.display = "block";
+            };
+            removeAnnouncementBtn.onclick = () => {
+                announcementBar.textContent = "";
+                announcementBar.style.display = "none";
+            };
+
+            // ===== Draggable =====
+            const panel = document.getElementById("adminPanel");
+            const header = document.getElementById("adminHeader");
+            let isDragging = false, offsetX = 0, offsetY = 0;
+            header.onmousedown = (e) => { isDragging = true; offsetX = e.clientX - panel.offsetLeft; offsetY = e.clientY - panel.offsetTop; document.body.style.userSelect = "none"; }
+            document.onmousemove = (e) => { if (isDragging) { panel.style.left = (e.clientX - offsetX) + "px"; panel.style.top = (e.clientY - offsetY) + "px"; } }
+            document.onmouseup = () => { isDragging = false; document.body.style.userSelect = "auto"; }
+        }
+    </script>
+</body>
+</html>

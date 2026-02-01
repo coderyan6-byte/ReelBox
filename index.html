@@ -1,0 +1,295 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>ReelBox+</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        body {
+            background: #000;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        /* GENERAL SECTIONS */
+        section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 60px 20px;
+            flex-direction: column;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* HERO */
+        .hero {
+            background: radial-gradient(circle at top, #111 0%, #000 60%);
+        }
+
+        .logo {
+            font-size: 5rem;
+            font-weight: 900;
+            color: #e50914;
+            letter-spacing: 2px;
+            margin-bottom: 20px;
+            position: relative;
+            display: inline-block;
+        }
+
+            .logo.glitch::before,
+            .logo.glitch::after {
+                content: attr(data-text); /* match the visible text */
+                position: absolute;
+                left: 0;
+                top: 0;
+                opacity: 0.7;
+            }
+
+            .logo.glitch::before {
+                color: red;
+                transform: translate(2px, 0);
+                animation: glitch 2s infinite;
+            }
+
+            .logo.glitch::after {
+                color: blue;
+                transform: translate(-2px, 0);
+                animation: glitch 1.5s infinite;
+            }
+
+        .tagline {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 40px;
+            max-width: 600px;
+        }
+
+        .enter-btn {
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: white;
+            background: #e50914;
+            border-radius: 4px;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            margin-bottom: 60px;
+        }
+
+            .enter-btn:hover {
+                transform: scale(1.05);
+                box-shadow: 0 0 20px rgba(229, 9, 20, 0.6);
+            }
+
+        .scroll-hint {
+            font-size: 0.9rem;
+            opacity: 0.6;
+            animation: pulse 2s infinite;
+            margin-top: 30px;
+        }
+
+        /* INFO SECTION */
+        .info {
+            background: linear-gradient(#000, #050505);
+            padding: 60px 20px;
+            text-align: center;
+        }
+
+        .info-box {
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .info h2 {
+            font-size: 2.5rem;
+            margin-bottom: 20px;
+            color: #e50914;
+        }
+
+        .info p {
+            font-size: 1.1rem;
+            opacity: 0.85;
+            line-height: 1.6;
+            margin-bottom: 40px;
+        }
+
+        .demo-image {
+            width: 100%;
+            max-width: 800px;
+            border-radius: 8px;
+            box-shadow: 0 0 40px rgba(229, 9, 20, 0.25);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+            .demo-image:hover {
+                transform: scale(1.03);
+                box-shadow: 0 0 60px rgba(229, 9, 20, 0.5);
+            }
+
+        /* CARD SECTION */
+        .cards {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 50px;
+        }
+
+        .card {
+            background: #111;
+            padding: 20px;
+            border-radius: 12px;
+            width: 250px;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            text-align: left;
+        }
+
+            .card:hover {
+                transform: translateY(-10px) scale(1.05);
+                box-shadow: 0 10px 40px rgba(229,9,20,0.6);
+            }
+
+            .card img {
+                width: 100%;
+                border-radius: 8px;
+                margin-bottom: 15px;
+            }
+
+            .card h3 {
+                font-size: 1.2rem;
+                margin-bottom: 10px;
+                color: #e50914;
+            }
+
+            .card p {
+                font-size: 0.95rem;
+                opacity: 0.8;
+                line-height: 1.4;
+            }
+
+        /* ANIMATIONS */
+        @keyframes glitch {
+            0% {
+                clip-path: inset(0 0 90% 0);
+            }
+
+            50% {
+                clip-path: inset(40% 0 40% 0);
+            }
+
+            100% {
+                clip-path: inset(90% 0 0 0);
+            }
+        }
+
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 0.4;
+            }
+
+            50% {
+                opacity: 0.9;
+            }
+        }
+
+        /* FLOATING SHAPES */
+        .shape {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.05;
+            animation: float 10s infinite ease-in-out;
+        }
+
+        .shape1 {
+            width: 120px;
+            height: 120px;
+            background: red;
+            top: 10%;
+            left: 20%;
+            animation-delay: 0s;
+        }
+
+        .shape2 {
+            width: 80px;
+            height: 80px;
+            background: blue;
+            top: 60%;
+            left: 70%;
+            animation-delay: 2s;
+        }
+
+        .shape3 {
+            width: 100px;
+            height: 100px;
+            background: #e50914;
+            top: 30%;
+            left: 50%;
+            animation-delay: 4s;
+        }
+
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) translateX(0);
+            }
+
+            50% {
+                transform: translateY(-20px) translateX(15px);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="logo glitch" data-text="ReelBox+">ReelBox+</div>
+        <div class="tagline">
+            Awesome movies. Unique films. Great stories.
+        </div>
+        <a href="login.html" class="enter-btn">ENTER</a>
+        <div class="scroll-hint">▼ Scroll for more ▼</div>
+
+        <!-- Floating shapes for visual flair -->
+        <div class="shape shape1"></div>
+        <div class="shape shape2"></div>
+        <div class="shape shape3"></div>
+    </section>
+
+    <!-- INFO -->
+    <section class="info">
+        <div class="info-box">
+            <h2>What is ReelBox+?</h2>
+            <p>
+                ReelBox+ is a streaming service for movies and shows.
+                Some content may appear corrupted. Viewer discretion is advised.
+                <br><br>
+                Not all movies are high quality.
+            </p>
+            <img src="Demo.png" alt="Catflix Demo" class="demo-image" />
+        </div>
+
+        <div class="cards">
+            <div class="cards">
+                <div class="card file-card">
+                    <img src="Example1.png" alt="Recovered Clip">
+                    <h3>Story telling</h3>
+                    <p>Great movies and story telling.</p>
+                </div>
+                <div class="card file-card">
+                    <img src="Example2.png" alt="Glitched Image">
+                    <h3>Accounts</h3>
+                    <p>Signups are esay and just require an email and pasword.</p>
