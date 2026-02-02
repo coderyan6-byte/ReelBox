@@ -82,12 +82,11 @@
         <div id="toggle-mode">Don't have an account? Sign up</div>
     </div>
 
-    <!-- Supabase client declared once -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
         const supabaseUrl = "https://vjeqaxbcrhodysiiqxey.supabase.co";
         const supabaseKey = "sb_publishable_tE3uzAT6BwaEBfQRFfQ2hg_I9KEG8js";
-        const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+        const sb = supabase.createClient(supabaseUrl, supabaseKey);
 
         const emailInput = document.getElementById('email');
         const passwordInput = document.getElementById('password');
@@ -100,11 +99,15 @@
         toggleMode.onclick = () => {
             isLogin = !isLogin;
             actionBtn.textContent = isLogin ? 'Login' : 'Sign Up';
-            toggleMode.textContent = isLogin ? "Don't have an account? Sign up" : "Already have an account? Login";
+            toggleMode.textContent = isLogin
+                ? "Don't have an account? Sign up"
+                : "Already have an account? Login";
             errorMsg.textContent = '';
         };
 
         actionBtn.onclick = async () => {
+            errorMsg.textContent = '';
+
             const email = emailInput.value.trim();
             const password = passwordInput.value.trim();
 
@@ -114,26 +117,56 @@
             }
 
             if (isLogin) {
-                const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-                if (error) errorMsg.textContent = error.message;
-                else window.location.href = 'hub.html';
-            } else {
-                const { data, error } = await supabaseClient.auth.signUp({ email, password });
-                if (error) errorMsg.textContent = error.message;
-                else {
-                    // Insert default role into profiles table
-                    await supabaseClient.from('profiles').insert({
-                        id: data.user.id,
-                        role: 'user',
-                        user_email: email
-                    });
-                    //alert('Sign up successful! You can now login.');
-                    isLogin = true;
-                    actionBtn.textContent = 'Login';
-                    toggleMode.textContent = "Don't have an account? Sign up";
-                    emailInput.value = '';
-                    passwordInput.value = '';
+                // ===== LOGIN =====
+                const { data, error } = await sb.auth.signInWithPassword({ email, password });
+                if (error) {
+                    errorMsg.textContent = error.message;
+                    return;
                 }
+
+                const user = data.user;
+
+                // 🔒 ENSURE PROFILE EXISTS BEFORE HUB
+                const { data: profile } = await sb
+                    .from('profiles')
+                    .select('id')
+                    .eq('id', user.id)
+                    .maybeSingle();
+
+                if (!profile) {
+                    await sb.from('profiles').insert({
+                        id: user.id,
+                        role: 'user',
+                        user_email: user.email
+                    });
+                }
+
+                window.location.href = 'hub.html';
+
+            } else {
+                // ===== SIGN UP =====
+                const { data, error } = await sb.auth.signUp({ email, password });
+                if (error) {
+                    errorMsg.textContent = error.message;
+                    return;
+                }
+
+                const user = data.user;
+
+                // ✅ CREATE PROFILE IMMEDIATELY
+                await sb.from('profiles').insert({
+                    id: user.id,
+                    role: 'user',
+                    user_email: email
+                });
+
+                // Switch back to login mode
+                isLogin = true;
+                actionBtn.textContent = 'Login';
+                toggleMode.textContent = "Don't have an account? Sign up";
+                emailInput.value = '';
+                passwordInput.value = '';
+                errorMsg.textContent = 'Account created. You can now log in.';
             }
         };
     </script>
